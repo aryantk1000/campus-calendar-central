@@ -10,6 +10,7 @@ import HomePage from "./pages/HomePage";
 import HallsPage from "./pages/HallsPage";
 import HallDetailPage from "./pages/HallDetailPage";
 import BookingsPage from "./pages/BookingsPage";
+import BookingDetailPage from "./pages/BookingDetailPage";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/auth/LoginPage";
 import SignupPage from "./pages/auth/SignupPage";
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/halls" element={<HallsPage />} />
           <Route path="/halls/:id" element={<HallDetailPage />} />
           <Route path="/bookings" element={<BookingsPage />} />
+          <Route path="/bookings/:id" element={<BookingDetailPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />

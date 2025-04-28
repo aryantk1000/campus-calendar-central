@@ -8,38 +8,9 @@ import { format, addDays } from "date-fns";
 import BookingCalendar from "@/components/booking/BookingCalendar";
 import BookingForm from "@/components/booking/BookingForm";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Hall } from "@/components/hall/HallCard";
-
-// Sample data
-const hallData: Record<string, Hall> = {
-  "1": {
-    id: "1",
-    name: "Main Auditorium",
-    capacity: 500,
-    location: "Main Building, Ground Floor",
-    amenities: ["Projector", "Sound System", "Air Conditioning", "Stage", "Backstage Area", "Wheelchair Accessible"],
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  "2": {
-    id: "2",
-    name: "Conference Hall A",
-    capacity: 100,
-    location: "East Wing, Second Floor",
-    amenities: ["Projector", "Whiteboard", "Video Conferencing", "WiFi", "Coffee Station"],
-    image: "https://images.unsplash.com/photo-1499155286265-79a9dc9c6380?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  "3": {
-    id: "3",
-    name: "Lecture Hall B",
-    capacity: 150,
-    location: "Science Block, First Floor",
-    amenities: ["Projector", "Acoustic Optimized", "Tiered Seating", "Microphones"],
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: false,
-  },
-};
+import { hallData } from "@/data/hallData";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Calendar, Clock, User } from "lucide-react";
 
 // Sample booked dates (for this demo, set a few random dates as booked)
 const generateBookedDates = (hallId: string): Date[] => {
@@ -52,16 +23,54 @@ const generateBookedDates = (hallId: string): Date[] => {
   ];
 };
 
+// Sample bookings for this hall
+const generateSampleBookings = (hallId: string) => {
+  const today = new Date();
+  return [
+    {
+      id: `${hallId}-1`,
+      title: "Department Meeting",
+      bookedBy: "Prof. Sarah Johnson",
+      date: addDays(today, 7),
+      startTime: "09:00",
+      endTime: "11:00",
+      status: "approved"
+    },
+    {
+      id: `${hallId}-2`,
+      title: "Guest Lecture",
+      bookedBy: "Prof. Michael Chen",
+      date: addDays(today, 14),
+      startTime: "14:00",
+      endTime: "16:00",
+      status: "approved"
+    },
+    {
+      id: `${hallId}-3`,
+      title: "Workshop on AI",
+      bookedBy: "Dr. Lisa Murphy",
+      date: addDays(today, 21),
+      startTime: "10:00",
+      endTime: "15:00",
+      status: "pending"
+    }
+  ];
+};
+
 const HallDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
+  const [showUpcomingBookings, setShowUpcomingBookings] = useState(true);
   
   // Fetch hall data based on id
   const hall = id ? hallData[id] : null;
   
   // Get booked dates for this hall
   const bookedDates = id ? generateBookedDates(id) : [];
+  
+  // Get sample bookings for this hall
+  const sampleBookings = id ? generateSampleBookings(id) : [];
   
   // If hall not found
   if (!hall) {
@@ -126,7 +135,7 @@ const HallDetailPage = () => {
                 </Badge>
               ) : (
                 <Badge variant="secondary" className="bg-red-100 text-red-800">
-                  Booked
+                  Currently Booked
                 </Badge>
               )}
             </div>
@@ -156,12 +165,50 @@ const HallDetailPage = () => {
               <div>
                 <h2 className="text-lg font-medium">Description</h2>
                 <p className="text-muted-foreground">
-                  {/* This would come from the API in a real app */}
                   This versatile seminar hall is perfect for conferences, lectures, and events. 
                   It offers excellent acoustics, comfortable seating, and modern amenities to 
                   ensure your event runs smoothly.
                 </p>
               </div>
+            </div>
+
+            {/* Upcoming Bookings */}
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Upcoming Bookings</h2>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setShowUpcomingBookings(!showUpcomingBookings)}
+                >
+                  {showUpcomingBookings ? "Hide" : "Show"}
+                </Button>
+              </div>
+              
+              {showUpcomingBookings && (
+                <div className="border rounded-md overflow-hidden">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Event</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Time</TableHead>
+                        <TableHead>Booked By</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {sampleBookings.map(booking => (
+                        <TableRow key={booking.id}>
+                          <TableCell className="font-medium">{booking.title}</TableCell>
+                          <TableCell>{format(booking.date, "MMM dd, yyyy")}</TableCell>
+                          <TableCell>{booking.startTime} - {booking.endTime}</TableCell>
+                          <TableCell>{booking.bookedBy}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </div>
           </div>
           

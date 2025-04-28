@@ -1,76 +1,26 @@
 
 import { useState } from "react";
 import Layout from "@/components/layout/Layout";
-import HallCard, { Hall } from "@/components/hall/HallCard";
+import HallCard from "@/components/hall/HallCard";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { hallData } from "@/data/hallData";
 
-// Sample data
-const allHalls: Hall[] = [
-  {
-    id: "1",
-    name: "Main Auditorium",
-    capacity: 500,
-    location: "Main Building, Ground Floor",
-    amenities: ["Projector", "Sound System", "Air Conditioning"],
-    image: "https://images.unsplash.com/photo-1605810230434-7631ac76ec81?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  {
-    id: "2",
-    name: "Conference Hall A",
-    capacity: 100,
-    location: "East Wing, Second Floor",
-    amenities: ["Projector", "Whiteboard", "Video Conferencing"],
-    image: "https://images.unsplash.com/photo-1499155286265-79a9dc9c6380?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  {
-    id: "3",
-    name: "Lecture Hall B",
-    capacity: 150,
-    location: "Science Block, First Floor",
-    amenities: ["Projector", "Acoustic Optimized", "Tiered Seating"],
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: false,
-  },
-  {
-    id: "4",
-    name: "Seminar Room 101",
-    capacity: 50,
-    location: "Arts Block, Ground Floor",
-    amenities: ["Whiteboard", "Air Conditioning"],
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  {
-    id: "5",
-    name: "Meeting Room 220",
-    capacity: 20,
-    location: "Administration Building, 2nd Floor",
-    amenities: ["TV Screen", "Video Conferencing"],
-    image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: true,
-  },
-  {
-    id: "6",
-    name: "Multimedia Hall",
-    capacity: 200,
-    location: "Media Center, Ground Floor",
-    amenities: ["Projector", "Sound System", "Recording Equipment"],
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-4.0.3&auto=format&fit=crop&q=80",
-    available: false,
-  },
-];
+// Create an array from the hallData object
+const allHalls = Object.values(hallData);
 
 // Unique list of amenities
 const allAmenities = Array.from(new Set(allHalls.flatMap(hall => hall.amenities)));
 
+// Unique list of blocks
+const allBlocks = Array.from(new Set(allHalls.map(hall => hall.location.split(',')[0].trim())));
+
 const HallsPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [capacityFilter, setCapacityFilter] = useState("");
+  const [blockFilter, setBlockFilter] = useState("");
   const [availabilityFilter, setAvailabilityFilter] = useState<boolean | undefined>(undefined);
   const [selectedAmenities, setSelectedAmenities] = useState<string[]>([]);
   
@@ -80,16 +30,19 @@ const HallsPage = () => {
                           hall.location.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesCapacity = capacityFilter === "" || 
-                          (capacityFilter === "small" && hall.capacity <= 50) ||
-                          (capacityFilter === "medium" && hall.capacity > 50 && hall.capacity <= 150) ||
-                          (capacityFilter === "large" && hall.capacity > 150);
+                          (capacityFilter === "small" && hall.capacity <= 100) ||
+                          (capacityFilter === "medium" && hall.capacity > 100 && hall.capacity <= 250) ||
+                          (capacityFilter === "large" && hall.capacity > 250);
+    
+    const matchesBlock = blockFilter === "" || 
+                        hall.location.toLowerCase().includes(blockFilter.toLowerCase());
     
     const matchesAvailability = availabilityFilter === undefined || hall.available === availabilityFilter;
     
     const matchesAmenities = selectedAmenities.length === 0 || 
                            selectedAmenities.every(amenity => hall.amenities.includes(amenity));
     
-    return matchesSearch && matchesCapacity && matchesAvailability && matchesAmenities;
+    return matchesSearch && matchesCapacity && matchesBlock && matchesAvailability && matchesAmenities;
   });
   
   const handleAmenityToggle = (amenity: string) => {
@@ -123,6 +76,21 @@ const HallsPage = () => {
                 </div>
                 
                 <div>
+                  <Label htmlFor="block">Block</Label>
+                  <Select value={blockFilter} onValueChange={setBlockFilter}>
+                    <SelectTrigger id="block" className="mt-1">
+                      <SelectValue placeholder="All Blocks" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All Blocks</SelectItem>
+                      {allBlocks.map(block => (
+                        <SelectItem key={block} value={block}>{block}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div>
                   <Label htmlFor="capacity">Capacity</Label>
                   <Select value={capacityFilter} onValueChange={setCapacityFilter}>
                     <SelectTrigger id="capacity" className="mt-1">
@@ -130,9 +98,9 @@ const HallsPage = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="">All Sizes</SelectItem>
-                      <SelectItem value="small">Small (up to 50)</SelectItem>
-                      <SelectItem value="medium">Medium (51-150)</SelectItem>
-                      <SelectItem value="large">Large (151+)</SelectItem>
+                      <SelectItem value="small">Small (up to 100)</SelectItem>
+                      <SelectItem value="medium">Medium (101-250)</SelectItem>
+                      <SelectItem value="large">Large (251+)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
