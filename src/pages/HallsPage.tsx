@@ -82,7 +82,7 @@ const HallsPage = () => {
                       <SelectValue placeholder="All Blocks" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Blocks</SelectItem>
+                      <SelectItem value="all">All Blocks</SelectItem>
                       {allBlocks.map(block => (
                         <SelectItem key={block} value={block}>{block}</SelectItem>
                       ))}
@@ -97,7 +97,7 @@ const HallsPage = () => {
                       <SelectValue placeholder="All Sizes" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Sizes</SelectItem>
+                      <SelectItem value="all">All Sizes</SelectItem>
                       <SelectItem value="small">Small (up to 100)</SelectItem>
                       <SelectItem value="medium">Medium (101-250)</SelectItem>
                       <SelectItem value="large">Large (251+)</SelectItem>
@@ -108,9 +108,9 @@ const HallsPage = () => {
                 <div>
                   <Label htmlFor="availability">Availability</Label>
                   <Select 
-                    value={availabilityFilter === undefined ? "" : availabilityFilter ? "available" : "booked"}
+                    value={availabilityFilter === undefined ? "all" : availabilityFilter ? "available" : "booked"}
                     onValueChange={(val) => {
-                      if (val === "") {
+                      if (val === "all") {
                         setAvailabilityFilter(undefined);
                       } else {
                         setAvailabilityFilter(val === "available");
@@ -121,7 +121,7 @@ const HallsPage = () => {
                       <SelectValue placeholder="All Halls" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All Halls</SelectItem>
+                      <SelectItem value="all">All Halls</SelectItem>
                       <SelectItem value="available">Available Only</SelectItem>
                       <SelectItem value="booked">Booked Only</SelectItem>
                     </SelectContent>
