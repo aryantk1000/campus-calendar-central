@@ -116,20 +116,20 @@ const BookingForm = ({ date, hallId, hallName }: BookingFormProps) => {
     {
       name: "Department Secretary",
       role: "Initial Review",
-      status: "approved",
+      status: "approved" as const,
       timestamp: "May 1, 2025 - 10:23 AM",
       notes: "Verified room availability and event details."
     },
     {
       name: "Department Chair",
       role: "Department Approval",
-      status: "pending",
+      status: "pending" as const,
       timestamp: "Awaiting"
     },
     {
       name: "Facility Manager",
       role: "Final Approval",
-      status: "pending",
+      status: "pending" as const,
       timestamp: "Awaiting"
     }
   ];
